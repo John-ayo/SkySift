@@ -790,34 +790,5 @@ function init() {
     if (!firebaseOk) {
         fetchWeatherData(currentCity).finally(hideLoading);
     }
-}
-
-
-// ===================================================
-// TEMPORARY TEST - Browser Notification (Remove after testing)
-// ===================================================
-/*window.addEventListener('load', () => {
-    setTimeout(() => {
-        console.log('Testing notification...');
-        console.log('Notification permission:', Notification.permission);
-        
-        if (Notification.permission === 'granted') {
-            if ('Notification' in window && 'serviceWorker' in navigator) {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification('🌤️ Test Weather Alert', {
-                        body: 'If you see this, browser notifications are working!',
-                        icon: '/weather-icon.png',
-                        tag: 'test-notification',
-                        requireInteraction: false
-                    });
-                    console.log('✅ Test notification sent via service worker');
-                });
-            }
-        } else if (Notification.permission === 'default') {
-            console.log('⚠️ Notification permission not granted yet. Login to grant permission.');
-        } else {
-            console.log('❌ Notification permission denied');
-        }
-    }, 5000);*/
 });
 })()
