@@ -203,6 +203,7 @@ function attachAuthListener() {
         await fetchWeatherData(currentCity);
         
         setTimeout(() => {
+          showAuthOver();
           showNotificationBanner();
         }, 500); // Small delay to prevent flash
       }
@@ -749,9 +750,9 @@ document.head.appendChild(style);
   window.addEventListener('load', () => {
     showLoading();
     
-    if (authOverlay) {
-      authOverlay.style.visibility = 'visible';
-    }
+   // if (authOverlay) {
+   //   authOverlay.style.visibility = 'visible';
+   // }
     
     const firebaseOk = initFirebase();
     if (firebaseOk) {
