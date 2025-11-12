@@ -748,7 +748,7 @@ document.head.appendChild(style);
     });
   }
 
-  window.addEventListener('load', () => {
+  /*window.addEventListener('load', () => {
     showLoading();
     
     if (authOverlay) {
@@ -764,7 +764,33 @@ document.head.appendChild(style);
     if (!firebaseOk) {
       fetchWeatherData(currentCity).finally(hideLoading);
     }
-  });
+  });*/
+  // Initialize app
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+
+function init() {
+    showLoading();
+    
+    if (authOverlay) {
+        authOverlay.style.visibility = 'hidden';
+    }
+    
+    const firebaseOk = initFirebase();
+    if (firebaseOk) {
+        registerServiceWorker();
+        attachAuthListener();
+    }
+    
+    bindEvents(); // Always bind events!
+    
+    if (!firebaseOk) {
+        fetchWeatherData(currentCity).finally(hideLoading);
+    }
+}
 
 
 // ===================================================
