@@ -796,7 +796,7 @@ function init() {
 // ===================================================
 // TEMPORARY TEST - Browser Notification (Remove after testing)
 // ===================================================
-window.addEventListener('load', () => {
+/*window.addEventListener('load', () => {
     setTimeout(() => {
         console.log('Testing notification...');
         console.log('Notification permission:', Notification.permission);
@@ -818,6 +818,6 @@ window.addEventListener('load', () => {
         } else {
             console.log('❌ Notification permission denied');
         }
-    }, 5000);
+    }, 5000);*/
 });
 })()
