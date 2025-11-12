@@ -750,7 +750,7 @@ document.head.appendChild(style);
     showLoading();
     
     if (authOverlay) {
-      authOverlay.style.visibility = 'hidden';
+      authOverlay.style.visibility = 'visible';
     }
     
     const firebaseOk = initFirebase();
