@@ -201,10 +201,8 @@ function attachAuthListener() {
         console.log('Logged out');
         showGuestUI();
         await fetchWeatherData(currentCity);
-        showAuthOverlayAfterDelay();
         
         setTimeout(() => {
-          showAuthOverlay();
           showNotificationBanner();
         }, 500); // Small delay to prevent flash
       }
