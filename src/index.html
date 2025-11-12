@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkySift - Weather Made Simple</title>    
+    
+</head>
+<body>
+    <!-- Auth Overlay -->
+    <div class="auth-overlay" id="authOverlay">
+        <button class="auth-close-btn" id="closeSignup">×</button>
+        <!-- Sign Up Card -->
+        <div class="auth-card signup-card" id="signupCard">
+            <div class="weather-illustration">
+                <div class="sun"></div>
+                <div class="cloud"></div>
+            </div>
+            <div class="card-content">
+                <h2>Create<br>Account</h2>
+                <form id="signupForm">
+                    <input type="text" placeholder="Name" id="signupName" required>
+                    <input type="email" placeholder="Email" id="signupEmail" required>
+                    <input type="password" placeholder="Password (min 6 characters)" id="signupPassword" required minlength="6">
+                    <button type="submit" class="btn-primary">
+                        <span>Sign up</span>
+                        <span class="arrow">→</span>
+                    </button>
+                </form>
+                <p class="toggle-auth">
+                    <a href="#" id="showLogin">Sign in</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Login Card -->
+        <div class="auth-card login-card hidden" id="loginCard">
+            <button class="auth-close-btn" id="closeLogin">×</button>
+            <div class="weather-illustration night">
+                <div class="moon"></div>
+                <div class="cloud"></div>
+                <div class="stars">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="card-content">
+                <h2>Welcome<br>Back</h2>
+                <form id="loginForm">
+                    <input type="email" placeholder="Email" id="loginEmail" required>
+                    <input type="password" placeholder="Password" id="loginPassword" required>
+                    <button type="submit" class="btn-primary">
+                        <span>Sign in</span>
+                        <span class="arrow">→</span>
+                    </button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" id="showSignup">Sign up</a>
+                    <a href="#" id="forgotPassword">Forgot password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Logout Modal -->
+    <div class="custom-modal hidden" id="logoutModal">
+        <div class="modal-content">
+            <h3>⚠️ Logout Confirmation</h3>
+            <div class="modal-body">
+                <p><strong>Logged in as:</strong> <span id="logoutUserName">User</span></p>
+                <p><strong>Email:</strong> <span id="logoutUserEmail">email@example.com</span></p>
+                <p class="warning-text">If you logout, you will no longer receive weather alerts.</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-btn" id="cancelLogout">Cancel</button>
+                <button class="modal-btn logout-confirm-btn" id="confirmLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Location Search Modal -->
+    <div class="custom-modal hidden" id="locationModal">
+        <div class="modal-content location-modal">
+            <button class="modal-close" id="closeLocationModal">×</button>
+            <h3>Change Location</h3>
+            <div class="modal-body">
+                <div class="search-container">
+                    <input type="text" id="citySearch" placeholder="Search for a city..." autocomplete="off">
+                    <button class="search-btn" id="searchCityBtn">
+                        <img src="image/icon-search.svg" alt="" />
+                    </button>
+                </div>
+                <div class="city-suggestions hidden" id="citySuggestions"></div>
+                <div class="popular-cities">
+                    <h4>Popular Cities:</h4>
+                    <div class="city-grid">
+                        <button class="city-tag" data-city="New York">🗽 New York</button>
+                        <button class="city-tag" data-city="Lagos">🇳🇬 Lagos</button>
+                        <button class="city-tag" data-city="London">🇬🇧 London</button>
+                        <button class="city-tag" data-city="Tokyo">🇯🇵 Tokyo</button>
+                        <button class="city-tag" data-city="Paris">🇫🇷 Paris</button>
+                        <button class="city-tag" data-city="Dubai">🇦🇪 Dubai</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hourly Forecast Modal -->
+    <div class="custom-modal hidden" id="hourlyModal">
+        <div class="modal-content hourly-modal">
+            <button class="modal-close" id="closeHourlyModal">×</button>
+            <h3>📊 Hourly Forecast</h3>
+            <div class="modal-body">
+                <div class="hourly-scroll" id="hourlyForecastContainer">
+                    <!-- Hourly data will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner hidden" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Notification Banner -->
+    <div class="notification-banner hidden" id="notificationBanner">
+        <div class="notification-content">
+            <span class="notification-icon">⚠️</span>
+            <p>Sign up to receive emergency weather alerts and notifications!</p>
+            <button class="notification-close" id="closeNotification">×</button>
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="sidebar-header">
+            <button class="close-sidebar" id="closeSidebar">×</button>
+        </div>
+        
+        <!-- User Profile (logged in) -->
+        <div class="user-profile" id="sidebarUserProfile">
+            <div class="user-avatar" id="userAvatar">
+                <span class="avatar-text"></span>
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                <div class="avatar-upload-btn" id="avatarUploadBtn">
+                    <img src="image/icon-camera.svg" alt="camera" />
+                </div>
+            </div>
+            <h3 class="user-name-sidebar" id="userNameSidebar"></h3>
+            <p class="user-email" id="userEmailSidebar"></p>
+        </div>
+        
+        <!-- Guest Profile (logged out) -->
+        <div class="guest-profile hidden" id="sidebarGuestProfile">
+            <div class="guest-avatar">
+                <span>👤</span>
+            </div>
+            <h3 class="guest-title">Welcome Guest</h3>
+            <p class="guest-subtitle">Sign in to access all features</p>
+            
+            <div class="auth-buttons">
+                <button class="btn-signin" id="sidebarSigninBtn">
+                    <img src="image/icon-lock.svg" alt="lock" /> Sign In
+                </button>
+                <button class="btn-signup" id="sidebarSignupBtn">
+                    <span>✨</span> Create Account
+                </button>
+            </div>
+        </div>
+        
+        <div class="menu-section" id="loggedInMenu">
+            <!-- Settings Menu -->
+            <div class="menu-item expandable" id="settingsToggle">
+                <img src="image/icon-units.svg" alt="" class="menu-icon" />
+                <span>Settings</span>
+                <img src="image/icon-dropdown.svg" alt="" class="expand-arrow" />
+            </div>
+            
+            <div class="submenu hidden" id="settingsSubmenu">
+                <div class="setting-group">
+                    <h4 class="setting-title">Temperature</h4>
+                    <label class="radio-option">
+                        <input type="radio" name="temperature" value="celsius" checked>
+                        <span>Celsius (°C)</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="temperature" value="fahrenheit">
+                        <span>Fahrenheit (°F)</span>
+                    </label>
+                </div>
+                <div class="setting-group">
+                    <h4 class="setting-title">Wind Speed</h4>
+                    <label class="radio-option">
+                        <input type="radio" name="windspeed" value="kmh" checked>
+                        <span>km/h</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="windspeed" value="mph">
+                        <span>mph</span>
+                    </label>
+                </div>
+                
+                <div class="setting-group">
+                    <h4 class="setting-title">Precipitation</h4>
+                    <label class="radio-option">
+                        <input type="radio" name="precipitation" value="mm" checked>
+                        <span>Millimeters (mm)</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="precipitation" value="inch">
+                        <span>Inches (in)</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Notifications Menu -->
+            <div class="menu-item expandable" id="notificationsToggle">
+                <img src="image/icon-notifications.svg" alt="" class="menu-icon" />
+                <span>Notifications</span>
+                <img src="image/icon-dropdown.svg" alt="" class="expand-arrow" />
+            </div>
+            
+            <div class="submenu hidden" id="notificationsSubmenu">
+                <div class="setting-group">
+                    <label class="toggle-option">
+                        <span>Weather Alerts</span>
+                        <input type="checkbox" id="weatherAlertsToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <label class="toggle-option">
+                        <span>Severe Weather</span>
+                        <input type="checkbox" id="severeWeatherToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <label class="toggle-option">
+                        <span>Daily Forecast</span>
+                        <input type="checkbox" id="dailyForecastToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Appearance Menu --
+            <div class="menu-item expandable" id="appearanceToggle">
+                <span class="menu-icon">🎨</span>
+                <span>Appearance</span>
+                <img src="image/icon-dropdown.svg" alt="" class="expand-arrow" />
+            </div>
+            
+            <div class="submenu hidden" id="appearanceSubmenu">
+                <div class="setting-group">
+                    <h4 class="setting-title">Theme</h4>
+                    <label class="radio-option">
+                        <input type="radio" name="theme" value="light">
+                        <span>Light Mode ☀️</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="theme" value="dark">
+                        <span>Dark Mode 🌙</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="theme" value="auto" checked>
+                        <span>Auto (System) 🔄</span>
+                    </label>
+                </div>
+            </div> -->
+            
+            <div class="menu-item" id="locationItem">
+                <img src="image/icon-location.svg" alt="" class="menu-icon" />
+                <span class="location-text">Change Location</span>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="sidebarLogout">
+                <img src="image/icon-logout.svg" alt="" />Logout
+            </button>
+        </div>
+        
+        <div class="sidebar-footer hidden" id="sidebarGuestFooter">
+            <p class="guest-footer-text">
+                New to Weather App?<br>
+                <a href="#" id="guestSignupLink">Create an account</a> to receive weather alerts!
+            </p>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay hidden" id="sidebarOverlay"></div>
+
+    <!-- Weather App Container -->
+    <div class="container">
+        <div class="header">
+            <div class="menu-btn" id="menuBtn">
+                <div></div>
+                <div></div>
+            </div>
+            <div class="profile-section">
+                <span class="user-name hidden" id="userName"></span>
+                <div class="profile-icon" id="profileIcon"></div>
+            </div>
+        </div>
+        
+        <div class="city-name" id="cityName">New York</div>
+        
+        <div class="date-container">
+            <div class="date-badge" id="currentDate">Friday, 20 January</div>
+        </div>
+        
+        <div class="weather-condition" id="weatherCondition">Loading...</div>
+        
+        <div class="temperature" id="temperature">--°</div>
+        
+        <div class="daily-summary">
+            <h3>Daily Summary</h3>
+            <p id="dailySummary">Loading weather data...</p>
+        </div>
+        
+        <div class="weather-details">
+            <div class="detail-item">
+                <div class="detail-icon wind-icon"></div>
+                <div class="detail-value" id="windSpeed">-- km/h</div>
+                <div class="detail-label">Wind</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-icon humidity-icon"></div>
+                <div class="detail-value" id="humidity">--%</div>
+                <div class="detail-label">Humidity</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-icon visibility-icon"></div>
+                <div class="detail-value" id="visibility">-- km</div>
+                <div class="detail-label">Visibility</div>
+            </div>
+        </div>
+        
+        <div class="weekly-forecast">
+            <div class="weekly-forecast-header">
+                <h3>Weekly forecast</h3>
+                <span id="viewHourly">→</span>
+            </div>
+            <div class="forecast-grid" id="forecastGrid">
+                <!-- Forecast cards will be inserted here -->
+            </div>
+        </div>
+    </div>
+  
+</body>
+</html>
