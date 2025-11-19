@@ -203,7 +203,7 @@ function attachAuthListener() {
         await fetchWeatherData(currentCity);
         
         setTimeout(() => {
-          showAuthOver();
+          showAuthOverlay();
           showNotificationBanner();
         }, 500); // Small delay to prevent flash
       }
