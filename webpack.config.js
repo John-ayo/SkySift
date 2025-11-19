@@ -40,12 +40,12 @@ module.exports = {
         },
         {
           from: 'sitemap.xml',
-          to: '',
+          to: 'sitemap.xml',
           noErrorOnMissing: true
         },
         {
           from: 'robots.txt',
-          to: '',
+          to: 'robots.txt',
           noErrorOnMissing: true
         },
         { 
