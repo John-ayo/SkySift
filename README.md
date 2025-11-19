@@ -61,33 +61,33 @@
 
 ---
 
-📂 Project Structure
-skysift/
-├── src/
-│   ├── image/                 # Images and icons
-│   ├── index.html            # Main HTML file
-│   ├── index.js              # Main JavaScript file
-│   ├── style.css             # Stylesheet
-│   └── firebase-messaging-sw.js  # Service worker for FCM
-├── dist/                      # Build output (auto-generated)
-├── node_modules/             # Dependencies (auto-generated)
-├── .env                      # Environment variables (create this)
-├── .gitignore               # Git ignore file
-├── package.json             # Project config
-├── webpack.config.js        # Webpack configuration
-└── README.md               # This file
+## 📂 Project Structure
+- skysift/
+- ├── src/
+- │   ├── image/                 # Images and icons
+- │   ├── index.html            # Main HTML file
+- │   ├── index.js              # Main JavaScript file
+- │   ├── style.css             # Stylesheet
+- │   └── firebase-messaging-sw.js  # Service worker for FCM
+- ├── dist/                      # Build output (auto-generated)
+- ├── node_modules/             # Dependencies (auto-generated)
+- ├── .env                      # Environment variables (create this)
+- ├── .gitignore               # Git ignore file
+- ├── package.json             # Project config
+- ├── webpack.config.js        # Webpack configuration
+- └── README.md               # This file
 
-🎮 Usage
-For Guests
-Visit the website
-View weather for default city (Lagos)
-Search for any city worldwide
-View 7-day and hourly forecasts
-Change temperature and wind speed units
-For Registered Users
-Click Sign Up to create an account
-Log in with your credentials
-Upload a profile avatar
-Customize notification preferences
-Save favorite cities (automatically remembers last search)
-Receive weather alerts via push notifications
+## 🎮 Usage
+- For Guests
+- Visit the website
+- View weather for default city (Lagos)
+- Search for any city worldwide
+- View 7-day and hourly forecasts
+- Change temperature and wind speed units
+- For Registered Users
+- Click Sign Up to create an account
+- Log in with your credentials
+- Upload a profile avatar
+- Customize notification preferences
+- Save favorite cities (automatically remembers last search)
+- Receive weather alerts via push notifications
