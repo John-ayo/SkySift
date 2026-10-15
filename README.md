@@ -87,7 +87,6 @@
 - For Registered Users
 - Click Sign Up to create an account
 - Log in with your credentials
-- Upload a profile avatar
 - Customize notification preferences
 - Save favorite cities (automatically remembers last search)
 - Receive weather alerts via push notifications
